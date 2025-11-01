@@ -7,14 +7,11 @@ from datetime import datetime
 import sys
 import os
 
-# Add src to path
-sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
+# Add src to path for proper imports
+sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..'))
 
-from utils.logger import setup_logger
-from preprocess.clean_products import DataCleaner
-from pricing.price_competitiveness import PriceCompetitivenessAnalyzer
-from pricing.discount_recommendation import DiscountRecommender
-from pricing.elasticity_model import PriceElasticityModel
+# Now import from utils
+from src.utils.logger import setup_logger
 
 logger = setup_logger(__name__)
 
@@ -38,6 +35,8 @@ class DataProcessingPipeline:
         for directory in directories:
             directory.mkdir(parents=True, exist_ok=True)
             logger.info(f"Created directory: {directory}")
+
+
 
     def load_raw_data(self) -> pd.DataFrame:
         """Load and validate raw JSON data"""

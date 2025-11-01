@@ -3,7 +3,7 @@ import numpy as np
 import re
 from typing import Dict, Any
 import logging
-from utils.logger import setup_logger, DataQualityLogger  # Updated imports
+from src.utils.logger import setup_logger, DataQualityLogger  # Updated imports
 
 logger = setup_logger(__name__)
 
