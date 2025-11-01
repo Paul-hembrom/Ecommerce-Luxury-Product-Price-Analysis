@@ -4,14 +4,14 @@ With Complete Data Processing Pipeline
 """
 
 import logging
-from utils.logger import setup_logger
-from data_pipeline.process_data import DataProcessingPipeline
-from forecasting.demand_forecast import DemandForecaster
-from forecasting.price_forecast import PriceForecaster
-from reports.generate_report import PricingReportGenerator
-from llm.insight_generator import PricingInsightGenerator
-from dashboards.streamlit_app import PricingDashboard
-from api.api_server import app
+from src.utils.logger import setup_logger
+from src.data_pipeline.process_data import DataProcessingPipeline
+from src.forecasting.demand_forecast import DemandForecaster
+from src.forecasting.price_forecast import PriceForecaster
+from src.reports.generate_report import PricingReportGenerator
+from src.llm.insight_generator import PricingInsightGenerator
+from src.dashboards.streamlit_app import PricingDashboard
+from src.api.api_server import app
 import uvicorn
 import subprocess
 import sys
