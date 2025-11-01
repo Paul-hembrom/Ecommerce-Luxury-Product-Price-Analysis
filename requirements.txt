@@ -1,0 +1,38 @@
+# Core Data Science
+pandas==2.0.3
+numpy==1.24.3
+scikit-learn==1.3.0
+scipy==1.11.1
+
+# Machine Learning & Deep Learning
+tensorflow==2.13.0
+torch==2.1.0
+transformers==4.34.0
+
+# Visualization
+plotly==5.15.0
+seaborn==0.12.2
+matplotlib==3.7.2
+
+# Web Framework & Dashboard
+streamlit==1.28.0
+fastapi==0.104.0
+uvicorn==0.24.0
+python-multipart==0.0.6
+
+# Data Processing
+pyarrow==13.0.0
+joblib==1.3.2  # For pickle serialization
+
+# Statistics & Econometrics
+statsmodels==0.14.0
+
+# PDF Generation
+fpdf==1.7.2
+
+# HTTP Requests
+requests==2.31.0
+
+# Utilities
+python-dotenv==1.0.0
+tqdm==4.66.1

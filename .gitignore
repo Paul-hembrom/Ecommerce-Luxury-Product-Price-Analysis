@@ -1,0 +1,31 @@
+# Data
+data/raw/
+data/processed/
+data/external/
+data/interim/
+
+# Models
+models/
+
+# Environment
+.env
+venv/
+.env/
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+
+# Logs
+*.log
