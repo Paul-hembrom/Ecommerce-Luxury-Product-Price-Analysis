@@ -1,0 +1,32 @@
+{
+  "pipeline_execution": {
+    "timestamp": "2025-11-02T05:26:04.321630",
+    "status": "completed",
+    "datasets_generated": [
+      "products_cleaned.parquet",
+      "price_competitiveness_analysis.parquet",
+      "discount_recommendations.parquet",
+      "elasticity_results.parquet",
+      "master_pricing_dataset.parquet"
+    ]
+  },
+  "data_quality_metrics": {
+    "initial_products": 305376,
+    "cleaned_products": 305376,
+    "data_retention_rate": "100.0%",
+    "brands_analyzed": 2807,
+    "categories_analyzed": 1
+  },
+  "analytics_insights": {
+    "competitiveness_analysis_combinations": 2807,
+    "discount_recommendations_generated": 303960,
+    "elasticity_optimization_opportunities": 0,
+    "average_competitiveness_score": 38.46403455453472,
+    "premium_products_percentage": "11.9%"
+  },
+  "business_impact": {
+    "products_with_optimization_opportunities": 860,
+    "potential_revenue_impact_elasticity": 0,
+    "high_impact_recommendations": 0
+  }
+}

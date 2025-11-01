@@ -6,7 +6,7 @@ from tensorflow.keras.layers import LSTM, Dense, Dropout
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.metrics import mean_absolute_error, mean_squared_error
 import logging
-from utils.logger import setup_logger
+from src.utils.logger import setup_logger
 import joblib
 
 logger = setup_logger(__name__)

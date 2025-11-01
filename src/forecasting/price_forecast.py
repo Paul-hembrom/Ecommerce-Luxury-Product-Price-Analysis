@@ -8,7 +8,7 @@ from sklearn.preprocessing import MinMaxScaler
 from sklearn.metrics import mean_absolute_error, mean_absolute_percentage_error
 import matplotlib.pyplot as plt
 import logging
-from utils.logger import setup_logger
+from src.utils.logger import setup_logger
 import joblib
 from datetime import datetime, timedelta
 

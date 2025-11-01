@@ -3,7 +3,7 @@ import numpy as np
 from sklearn.cluster import KMeans
 from sklearn.preprocessing import StandardScaler
 import logging
-from utils.logger import setup_logger
+from src.utils.logger import setup_logger
 
 logger = setup_logger(__name__)
 

@@ -4,7 +4,7 @@ from transformers import pipeline, AutoTokenizer, AutoModelForCausalLM
 import torch
 from typing import Dict, Any, List
 import logging
-from utils.logger import setup_logger
+from src.utils.logger import setup_logger
 
 logger = setup_logger(__name__)
 

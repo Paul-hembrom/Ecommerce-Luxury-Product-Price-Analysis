@@ -8,7 +8,7 @@ from sklearn.preprocessing import StandardScaler
 import statsmodels.api as sm
 from scipy import stats
 import logging
-from utils.logger import setup_logger
+from src.utils.logger import setup_logger
 import joblib  # Added for pickle saving
 import pickle  # Alternative method
 

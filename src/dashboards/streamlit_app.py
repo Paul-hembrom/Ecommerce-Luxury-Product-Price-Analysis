@@ -1,18 +1,38 @@
+
+import sys
+import os
+sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..'))
+
+# NOW import the fixer
+try:
+    import import_fixer
+except ImportError:
+    # If import_fixer is not in root, add path manually
+    project_root = os.path.join(os.path.dirname(__file__), '..', '..')
+    sys.path.append(project_root)
+    import import_fixer
+
+#
 import streamlit as st
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 import numpy as np
-import sys
-import os
 
-# Add src to path
-sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
+# Fix these imports - use direct module names
+try:
+    from pricing.price_competitiveness import PriceCompetitivenessAnalyzer
+    from pricing.discount_recommendation import DiscountRecommender
+    from utils.logger import setup_logger
+except ImportError as e:
+    st.error(f"Import error: {e}")
+    # Fallback: try absolute imports
+    from src.pricing.price_competitiveness import PriceCompetitivenessAnalyzer
+    from src.pricing.discount_recommendation import DiscountRecommender
+    from src.utils.logger import setup_logger
 
-from pricing.price_competitiveness import PriceCompetitivenessAnalyzer
-from pricing.discount_recommendation import DiscountRecommender
-
+logger = setup_logger(__name__)
 
 class PricingDashboard:
     def __init__(self):
@@ -39,7 +59,7 @@ class PricingDashboard:
 
     def display_overview(self, df_clean):
         """Display overview metrics"""
-        st.title("🛍️ Farfetch Pricing Analytics Dashboard")
+        st.title("🛍 Farfetch Pricing Analytics Dashboard")
 
         # Key metrics
         col1, col2, col3, col4 = st.columns(4)
@@ -62,7 +82,7 @@ class PricingDashboard:
 
     def display_price_analysis(self, df_clean, df_competitiveness):
         """Display price analysis visualizations"""
-        st.header("📊 Price Competitiveness Analysis")
+        st.header(" Price Competitiveness Analysis")
 
         col1, col2 = st.columns(2)
 
@@ -96,7 +116,7 @@ class PricingDashboard:
 
     def display_discount_recommendations(self, df_recommendations):
         """Display discount recommendations"""
-        st.header("🎯 Discount Recommendations")
+        st.header(" Discount Recommendations")
 
         # Filter recommendations
         col1, col2 = st.columns(2)
@@ -127,7 +147,7 @@ class PricingDashboard:
 
     def display_llm_insights(self, df_clean, df_competitiveness):
         """Display LLM-powered insights"""
-        st.header("🤖 AI-Powered Insights")
+        st.header(" AI-Powered Insights")
 
         # Generate insights based on data analysis
         total_brands = df_clean['brand_clean'].nunique()

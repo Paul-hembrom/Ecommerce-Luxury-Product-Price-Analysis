@@ -4,7 +4,7 @@ from sklearn.ensemble import RandomForestRegressor
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import mean_absolute_error, r2_score
 import logging
-from utils.logger import setup_logger
+from src.utils.logger import setup_logger
 
 logger = setup_logger(__name__)
 

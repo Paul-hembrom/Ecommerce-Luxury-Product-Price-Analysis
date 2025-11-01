@@ -7,11 +7,27 @@ from datetime import datetime
 import sys
 import os
 
-# Add src to path for proper imports
-sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..'))
+# Fix imports - add proper paths
+current_dir = os.path.dirname(__file__)
+project_root = os.path.join(current_dir, '..', '..')
+sys.path.insert(0, project_root)
+sys.path.insert(0, os.path.join(project_root, 'src'))
 
-# Now import from utils
-from src.utils.logger import setup_logger
+# Now import all required modules
+try:
+    from src.utils.logger import setup_logger
+    from src.preprocess.clean_products import DataCleaner
+    from src.pricing.price_competitiveness import PriceCompetitivenessAnalyzer
+    from src.pricing.discount_recommendation import DiscountRecommender
+    from src.pricing.elasticity_model import PriceElasticityModel
+except ImportError as e:
+    # Fallback imports
+    print(f"Primary import failed: {e}, trying fallback...")
+    from utils.logger import setup_logger
+    from preprocess.clean_products import DataCleaner
+    from pricing.price_competitiveness import PriceCompetitivenessAnalyzer
+    from pricing.discount_recommendation import DiscountRecommender
+    from pricing.elasticity_model import PriceElasticityModel
 
 logger = setup_logger(__name__)
 
@@ -415,26 +431,26 @@ def main():
     print("DATA PROCESSING PIPELINE COMPLETED SUCCESSFULLY!")
     print("=" * 70)
 
-    print(f"✅ Raw data loaded: {len(results['raw_data']):,} products")
-    print(f"✅ Data cleaned: {len(results['cleaned_data']):,} products")
-    print(f"✅ Competitiveness analysis: {len(results['competitiveness_analysis']):,} brand-category combinations")
-    print(f"✅ Discount recommendations: {len(results['discount_recommendations']):,} products")
-    print(f"✅ Elasticity recommendations: {len(results['elasticity_recommendations']):,} optimizations")
-    print(f"✅ Master dataset created: {len(results['master_dataset']):,} products with all features")
+    print(f" Raw data loaded: {len(results['raw_data']):,} products")
+    print(f" Data cleaned: {len(results['cleaned_data']):,} products")
+    print(f" Competitiveness analysis: {len(results['competitiveness_analysis']):,} brand-category combinations")
+    print(f" Discount recommendations: {len(results['discount_recommendations']):,} products")
+    print(f" Elasticity recommendations: {len(results['elasticity_recommendations']):,} optimizations")
+    print(f" Master dataset created: {len(results['master_dataset']):,} products with all features")
 
-    print(f"\n📊 Generated files in 'data/processed/':")
+    print(f"\n Generated files in 'data/processed/':")
     print("  - products_cleaned.parquet")
     print("  - price_competitiveness_analysis.parquet")
     print("  - discount_recommendations.parquet")
     print("  - elasticity_results.parquet")
     print("  - master_pricing_dataset.parquet")
 
-    print(f"\n📈 Interim files in 'data/interim/':")
+    print(f"\n Interim files in 'data/interim/':")
     print("  - cleaning_report.json")
     print("  - competitiveness_insights.json")
     print("  - discount_insights.json")
 
-    print(f"\n📋 Report in 'data/reports/':")
+    print(f"\n Report in 'data/reports/':")
     print("  - pipeline_execution_report.json")
     print("  - pipeline_execution_report.txt")
 

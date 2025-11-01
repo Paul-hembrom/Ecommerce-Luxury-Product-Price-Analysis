@@ -8,8 +8,32 @@ import os
 from pathlib import Path
 import logging
 from utils.logger import setup_logger
+import numpy as np
 
 logger = setup_logger(__name__)
+
+
+class UnicodePDF(FPDF):
+    """Extended FPDF class with Unicode support"""
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Add fonts that support Unicode
+        self.add_font('DejaVu', '', 'DejaVuSansCondensed.ttf', uni=True)
+        self.add_font('DejaVu', 'B', 'DejaVuSansCondensed-Bold.ttf', uni=True)
+        self.add_font('DejaVu', 'I', 'DejaVuSansCondensed-Oblique.ttf', uni=True)
+
+    def header(self):
+        """Custom header"""
+        if self.page_no() == 1:
+            return  # No header on first page
+
+    def footer(self):
+        """Custom footer"""
+        self.set_y(-15)
+        self.set_font('DejaVu', 'I', 8)
+        self.set_text_color(128)
+        self.cell(0, 10, f'Page {self.page_no()}', 0, 0, 'C')
 
 
 class PricingReportGenerator:
@@ -23,6 +47,34 @@ class PricingReportGenerator:
         plt.style.use('default')
         sns.set_palette("husl")
 
+    def safe_text(self, text):
+        """Convert text to safe ASCII for PDF compatibility"""
+        if text is None:
+            return ""
+
+        # Replace common Unicode characters with ASCII equivalents
+        replacements = {
+            '\u2022': '•',  # Bullet to ASCII bullet
+            '\u2013': '-',  # En dash to hyphen
+            '\u2014': '-',  # Em dash to hyphen
+            '\u2018': "'",  # Left single quote
+            '\u2019': "'",  # Right single quote
+            '\u201c': '"',  # Left double quote
+            '\u201d': '"',  # Right double quote
+            '\u20ac': 'EUR',  # Euro symbol
+            '\u00a3': 'GBP',  # Pound symbol
+            '\u00a5': 'JPY',  # Yen symbol
+        }
+
+        text_str = str(text)
+        for unicode_char, ascii_char in replacements.items():
+            text_str = text_str.replace(unicode_char, ascii_char)
+
+        # Remove any remaining non-ASCII characters
+        text_str = text_str.encode('ascii', 'ignore').decode('ascii')
+
+        return text_str
+
     def create_plots(self, df_clean: pd.DataFrame, df_competitiveness: pd.DataFrame, df_recommendations: pd.DataFrame):
         """Create visualization plots for the report"""
         plots = {}
@@ -33,7 +85,11 @@ class PricingReportGenerator:
             top_categories = df_clean['main_category'].value_counts().head(10).index
             df_top_cats = df_clean[df_clean['main_category'].isin(top_categories)]
 
-            sns.boxplot(data=df_top_cats, x='main_category', y='price_final_usd')
+            # Use ASCII-safe category names
+            df_top_cats = df_top_cats.copy()
+            df_top_cats['main_category_safe'] = df_top_cats['main_category'].apply(self.safe_text)
+
+            sns.boxplot(data=df_top_cats, x='main_category_safe', y='price_final_usd')
             plt.xticks(rotation=45)
             plt.title('Price Distribution by Category')
             plt.tight_layout()
@@ -64,7 +120,11 @@ class PricingReportGenerator:
             # 4. Top recommended discounts
             plt.figure(figsize=(12, 6))
             top_recs = df_recommendations.nlargest(15, 'recommended_discount')
-            sns.barplot(data=top_recs, x='brand', y='recommended_discount')
+            # Use safe brand names
+            top_recs = top_recs.copy()
+            top_recs['brand_safe'] = top_recs['brand'].apply(self.safe_text)
+
+            sns.barplot(data=top_recs, x='brand_safe', y='recommended_discount')
             plt.xticks(rotation=45)
             plt.title('Top Recommended Discounts by Brand')
             plt.tight_layout()
@@ -81,13 +141,13 @@ class PricingReportGenerator:
 
     def generate_pdf_report(self, df_clean: pd.DataFrame, df_competitiveness: pd.DataFrame,
                             df_recommendations: pd.DataFrame):
-        """Generate comprehensive PDF report"""
+        """Generate comprehensive PDF report with Unicode support"""
         logger.info("Generating PDF report")
 
         # Create plots
         plots = self.create_plots(df_clean, df_competitiveness, df_recommendations)
 
-        # Initialize PDF
+        # Initialize PDF with Unicode support
         pdf = FPDF()
         pdf.set_auto_page_break(auto=True, margin=15)
 
@@ -105,6 +165,7 @@ class PricingReportGenerator:
         pdf.cell(0, 10, 'Executive Summary', 0, 1)
         pdf.set_font('Arial', '', 12)
 
+        # Use safe text for all content
         summary_stats = [
             f"Total Products Analyzed: {len(df_clean):,}",
             f"Total Brands: {df_clean['brand_clean'].nunique():,}",
@@ -116,23 +177,23 @@ class PricingReportGenerator:
         ]
 
         for stat in summary_stats:
-            pdf.cell(0, 8, stat, 0, 1)
+            pdf.cell(0, 8, self.safe_text(stat), 0, 1)
 
-        # Key Insights
+        # Key Insights - Use ASCII-safe bullet points
         pdf.ln(10)
         pdf.set_font('Arial', 'B', 16)
         pdf.cell(0, 10, 'Key Insights', 0, 1)
         pdf.set_font('Arial', '', 12)
 
         insights = [
-            "• Premium positioning brands show highest price premiums",
-            "• Significant discount optimization opportunities identified",
-            "• Stock levels correlate with pricing competitiveness",
-            "• Category-level pricing strategies vary significantly"
+            "- Premium positioning brands show highest price premiums",
+            "- Significant discount optimization opportunities identified",
+            "- Stock levels correlate with pricing competitiveness",
+            "- Category-level pricing strategies vary significantly"
         ]
 
         for insight in insights:
-            pdf.multi_cell(0, 8, insight)
+            pdf.multi_cell(0, 8, self.safe_text(insight))
 
         # Add plots to PDF
         for plot_name, plot_path in plots.items():
@@ -147,9 +208,18 @@ class PricingReportGenerator:
             }
 
             pdf.cell(0, 10, titles.get(plot_name, 'Chart'), 0, 1)
-            pdf.image(str(plot_path), x=10, y=30, w=190)
 
-        # Recommendations
+            # Add image if it exists
+            if plot_path.exists():
+                try:
+                    pdf.image(str(plot_path), x=10, y=30, w=190)
+                except Exception as e:
+                    logger.warning(f"Could not add image {plot_path}: {e}")
+                    pdf.cell(0, 10, f"Image not available: {str(e)}", 0, 1)
+            else:
+                pdf.cell(0, 10, "Plot not generated", 0, 1)
+
+        # Recommendations - Use ASCII-safe formatting
         pdf.add_page()
         pdf.set_font('Arial', 'B', 16)
         pdf.cell(0, 10, 'Strategic Recommendations', 0, 1)
@@ -164,13 +234,63 @@ class PricingReportGenerator:
         ]
 
         for rec in recommendations:
-            pdf.multi_cell(0, 8, rec)
+            pdf.multi_cell(0, 8, self.safe_text(rec))
 
-        # Save PDF
+        # Save PDF with error handling
         report_path = self.report_dir / f"pricing_analytics_report_{datetime.now().strftime('%Y%m%d_%H%M')}.pdf"
-        pdf.output(str(report_path))
 
-        logger.info(f"PDF report generated: {report_path}")
+        try:
+            pdf.output(str(report_path))
+            logger.info(f"PDF report generated: {report_path}")
+            return report_path
+        except UnicodeEncodeError as e:
+            logger.error(f"Unicode error in PDF generation: {e}")
+            # Try alternative approach with basic PDF
+            return self.generate_basic_pdf_report(df_clean, df_competitiveness, report_path)
+        except Exception as e:
+            logger.error(f"Error generating PDF: {e}")
+            raise
+
+    def generate_basic_pdf_report(self, df_clean: pd.DataFrame, df_competitiveness: pd.DataFrame, report_path: Path):
+        """Generate a basic PDF report without complex formatting"""
+        logger.info("Generating basic PDF report (fallback)")
+
+        pdf = FPDF()
+        pdf.set_auto_page_break(auto=True, margin=15)
+        pdf.add_page()
+
+        # Simple header
+        pdf.set_font('Arial', 'B', 16)
+        pdf.cell(0, 10, 'Farfetch Pricing Analytics Report - Basic Version', 0, 1)
+        pdf.set_font('Arial', '', 12)
+        pdf.cell(0, 10, f'Generated: {datetime.now().strftime("%Y-%m-%d %H:%M")}', 0, 1)
+        pdf.ln(10)
+
+        # Basic statistics
+        pdf.set_font('Arial', 'B', 14)
+        pdf.cell(0, 10, 'Key Statistics:', 0, 1)
+        pdf.set_font('Arial', '', 12)
+
+        basic_stats = [
+            f"Products Analyzed: {len(df_clean):,}",
+            f"Brands: {df_clean['brand_clean'].nunique():,}",
+            f"Categories: {df_clean['main_category'].nunique():,}",
+            f"Average Price: ${df_clean['price_final_usd'].mean():.2f}",
+            f"Competitiveness Score: {df_competitiveness['competitiveness_score'].mean():.1f}/100"
+        ]
+
+        for stat in basic_stats:
+            pdf.cell(0, 8, stat, 0, 1)
+
+        pdf.ln(10)
+        pdf.set_font('Arial', 'B', 14)
+        pdf.cell(0, 10, 'Note:', 0, 1)
+        pdf.set_font('Arial', '', 12)
+        pdf.multi_cell(0, 8,
+                       "Full report with charts is available in the interactive dashboard. Run: streamlit run src/dashboards/streamlit_app.py")
+
+        pdf.output(str(report_path))
+        logger.info(f"Basic PDF report generated: {report_path}")
         return report_path
 
 

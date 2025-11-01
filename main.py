@@ -1,20 +1,38 @@
 """
 Farfetch Pricing Analytics Engine - Updated Main Execution Script
-With Complete Data Processing Pipeline
+With Complete Data Processing Pipeline and Fixed Imports
 """
 
-import logging
-from src.utils.logger import setup_logger
-from src.data_pipeline.process_data import DataProcessingPipeline
-from src.forecasting.demand_forecast import DemandForecaster
-from src.forecasting.price_forecast import PriceForecaster
-from src.reports.generate_report import PricingReportGenerator
-from src.llm.insight_generator import PricingInsightGenerator
-from src.dashboards.streamlit_app import PricingDashboard
-from src.api.api_server import app
-import uvicorn
-import subprocess
 import sys
+import os
+from pathlib import Path
+
+# Setup Python path first
+project_root = Path(__file__).parent
+src_path = project_root / "src"
+
+if str(project_root) not in sys.path:
+    sys.path.insert(0, str(project_root))
+if str(src_path) not in sys.path:
+    sys.path.insert(0, str(src_path))
+
+# Now import other modules
+try:
+    from src.utils.logger import setup_logger
+    from src.data_pipeline.process_data import DataProcessingPipeline
+    from src.forecasting.demand_forecast import DemandForecaster
+    from src.forecasting.price_forecast import PriceForecaster
+    from src.reports.generate_report import PricingReportGenerator
+    from src.llm.insight_generator import PricingInsightGenerator
+except ImportError as e:
+    print(f"Import error: {e}")
+    print("Trying alternative imports...")
+    from utils.logger import setup_logger
+    from data_pipeline.process_data import DataProcessingPipeline
+    from forecasting.demand_forecast import DemandForecaster
+    from forecasting.price_forecast import PriceForecaster
+    from reports.generate_report import PricingReportGenerator
+    from llm.insight_generator import PricingInsightGenerator
 
 logger = setup_logger(__name__)
 
@@ -31,7 +49,7 @@ class CompletePricingEngine:
         pipeline = DataProcessingPipeline(self.raw_data_path)
         self.results = pipeline.run_complete_pipeline()
 
-        logger.info("✅ Data pipeline completed successfully")
+        logger.info("    Data pipeline completed successfully")
         return self.results
 
     def run_ml_forecasting(self):
@@ -59,7 +77,7 @@ class CompletePricingEngine:
             except Exception as e:
                 logger.warning(f"Could not train model for {brand}: {str(e)}")
 
-        logger.info("✅ ML forecasting completed successfully")
+        logger.info(" ML forecasting completed successfully")
         return {
             'demand_forecaster': demand_forecaster,
             'price_forecasting': price_results
@@ -84,7 +102,7 @@ class CompletePricingEngine:
             self.results['discount_recommendations']
         )
 
-        logger.info("✅ Insights and reports generated successfully")
+        logger.info(" Insights and reports generated successfully")
         return {
             'ai_insights': insights,
             'report_path': report_path
@@ -93,26 +111,26 @@ class CompletePricingEngine:
     def display_final_summary(self):
         """Display final execution summary"""
         print("\n" + "=" * 80)
-        print("🎉 FARFETCH PRICING ANALYTICS ENGINE - EXECUTION COMPLETE!")
+        print(" FARFETCH PRICING ANALYTICS ENGINE - EXECUTION COMPLETE!")
         print("=" * 80)
 
-        print("\n📊 DATA PROCESSING RESULTS:")
+        print("\n DATA PROCESSING RESULTS:")
         print(f"   Products Analyzed: {len(self.results['cleaned_data']):,}")
         print(f"   Brands Processed: {self.results['cleaned_data']['brand_clean'].nunique():,}")
         print(f"   Categories Analyzed: {self.results['cleaned_data']['main_category'].nunique():,}")
 
-        print("\n🔍 ANALYTICS GENERATED:")
+        print("\n ANALYTICS GENERATED:")
         print(f"   Competitiveness Analysis: {len(self.results['competitiveness_analysis']):,} combinations")
         print(f"   Discount Recommendations: {len(self.results['discount_recommendations']):,} products")
         print(f"   Elasticity Optimizations: {len(self.results['elasticity_recommendations']):,} opportunities")
 
-        print("\n🤖 AI & ML MODELS:")
-        print("   Demand Forecasting Model: ✅ Trained (LSTM)")
-        print("   Price Forecasting Models: ✅ Trained for top brands")
-        print("   Elasticity Model: ✅ Trained and optimized")
-        print("   LLM Insights: ✅ Generated natural language analysis")
+        print("\n AI & ML MODELS:")
+        print("   Demand Forecasting Model: Trained (LSTM)")
+        print("   Price Forecasting Models:  Trained for top brands")
+        print("   Elasticity Model:  Trained and optimized")
+        print("   LLM Insights:  Generated natural language analysis")
 
-        print("\n📁 OUTPUT FILES GENERATED:")
+        print("\n OUTPUT FILES GENERATED:")
         print("   data/processed/products_cleaned.parquet")
         print("   data/processed/price_competitiveness_analysis.parquet")
         print("   data/processed/discount_recommendations.parquet")
@@ -122,7 +140,7 @@ class CompletePricingEngine:
         print("   models/price_elasticity_model.pkl")
         print("   models/price_forecast_*.h5 (for top brands)")
 
-        print("\n🚀 NEXT STEPS:")
+        print("\n NEXT STEPS:")
         print("   1. Start Dashboard: streamlit run src/dashboards/streamlit_app.py")
         print("   2. Start API: python src/api/api_server.py")
         print("   3. View Reports: Check 'data/reports/' directory")

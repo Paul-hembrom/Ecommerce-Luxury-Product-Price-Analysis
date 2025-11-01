@@ -1,0 +1,34 @@
+FARFETCH PRICING ANALYTICS - DATA PROCESSING PIPELINE REPORT
+======================================================================
+
+Execution Time: 2025-11-02T05:26:04.321630
+Status: COMPLETED
+
+DATA QUALITY METRICS:
+----------------------------------------
+Initial Products: 305376
+Cleaned Products: 305376
+Data Retention Rate: 100.0%
+Brands Analyzed: 2807
+Categories Analyzed: 1
+
+ANALYTICS INSIGHTS:
+----------------------------------------
+Competitiveness Analysis Combinations: 2807
+Discount Recommendations Generated: 303960
+Elasticity Optimization Opportunities: 0
+Average Competitiveness Score: 38.46403455453472
+Premium Products Percentage: 11.9%
+
+BUSINESS IMPACT:
+----------------------------------------
+Products With Optimization Opportunities: 860
+Potential Revenue Impact Elasticity: 0
+High Impact Recommendations: 0
+
+Generated Datasets (5):
+  - products_cleaned.parquet
+  - price_competitiveness_analysis.parquet
+  - discount_recommendations.parquet
+  - elasticity_results.parquet
+  - master_pricing_dataset.parquet

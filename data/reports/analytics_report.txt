@@ -1,0 +1,38 @@
+
+FARFETCH PRICING ANALYTICS REPORT
+Generated: 2025-11-02 04:13:34
+========================================
+
+SUMMARY STATISTICS:
+- Total Products: 305,376
+- Total Brands: 2,807
+- Average Price: $691.75
+- Average Discount: 10.5%
+- Products on Discount: 108,550
+
+PRICE SEGMENTS:
+price_segment
+Affordable    129186
+Mid-Range      74929
+Premium        36655
+Luxury         35827
+Budget         28779
+Name: count, dtype: int64
+
+TOP BRANDS BY COMPETITIVENESS:
+                        brand_clean  competitiveness_score  price_final_usd_mean
+460                       Calmlence              99.991626                691.69
+1808        Nicolas Andreas Taralis              99.990180                691.68
+2728                   Warren Lotas              99.963560                692.00
+435                      Burc Akyol              99.891878                691.00
+2664                        Versace              99.889834                692.51
+2262                          Sapio              99.852248                692.77
+2490  Takahiromiyashita The Soloist              99.831162                690.58
+572                      Churchills              99.746718                693.50
+1645                        Matsuda              99.738045                693.56
+1440                        Lardini              99.686003                693.92
+
+DISCOUNT RECOMMENDATIONS:
+- Increase Discount: 9,133
+- Decrease Discount: 90,159
+- Maintain Discount: 206,084
